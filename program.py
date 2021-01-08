@@ -38,6 +38,60 @@ def load_image(name, colorkey=None):
     return image
 
 
+def start_screen():
+    intro_text = ["ЗАСТАВКА"]
+
+    fon = pygame.transform.scale(load_image('fon2.png'), (width, height))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                return
+        pygame.display.flip()
+
+
+def finish_screen():
+    global score, omissions
+    intro_text = [f'Ваш результат - {score}',
+                  'Нажмите "Enter", чтобы начать новую игру.']
+    fon2 = pygame.transform.scale(load_image('fon2.png'), (width, height))
+    screen.blit(fon2, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 100
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                terminate()
+            if e.type == pygame.KEYDOWN:
+                score = 0
+                omissions = 0
+                return
+        pygame.display.flip()
+
+
 class Basket(pygame.sprite.Sprite):
     image = load_image("box.png", colorkey=-1)
 
@@ -87,17 +141,22 @@ class Fruit(pygame.sprite.Sprite):
             self.kill()
             Fruit((random.choice(A), 0))
             if time < 400:
-                time += 2
+                time += 3
         else:
-            omissions += 1
+            if omissions < 3:
+                omissions += 1
+            else:
+                finish_screen()
             self.kill()
             Fruit((random.choice(A), 0))
 
 
+start_screen()
+fon = pygame.transform.scale(load_image('fon.png'), (width, height))
 running = True
 Fruit((random.choice(A), 0))
 while running:
-    screen.fill((0, 0, 0))
+    screen.blit(fon, (0, 0))
     f = None
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
