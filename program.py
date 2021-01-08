@@ -11,6 +11,7 @@ pygame.display.set_caption('HARVESTING')
 all_sprites = pygame.sprite.Group()
 
 A = [25, 125, 225, 325, 425, 525, 625]
+x_colors = [pygame.Color('grey'), pygame.Color('grey'), pygame.Color('grey')]
 tm = pygame.time.Clock()
 time = 200
 score = 0
@@ -38,11 +39,29 @@ def load_image(name, colorkey=None):
     return image
 
 
+def print_score():
+    font = pygame.font.Font(None, 25)
+    text = font.render(f'''Счёт: {str(score)}''', True, (0, 255, 0))
+    text_x, text_y = 5, 5
+    screen.blit(text, (text_x, text_y))
+    draw_x()
+
+
+def draw_x():
+    pygame.draw.line(screen, x_colors[0], (5, 25), (30, 50), width=8)
+    pygame.draw.line(screen, x_colors[0], (5, 50), (30, 25), width=8)
+
+    pygame.draw.line(screen, x_colors[1], (35, 25), (60, 50), width=8)
+    pygame.draw.line(screen, x_colors[1], (35, 50), (60, 25), width=8)
+
+    pygame.draw.line(screen, x_colors[2], (65, 25), (90, 50), width=8)
+    pygame.draw.line(screen, x_colors[2], (65, 50), (90, 25), width=8)
+
+
 def start_screen():
     intro_text = ["ЗАСТАВКА"]
-
-    fon = pygame.transform.scale(load_image('fon2.png'), (width, height))
-    screen.blit(fon, (0, 0))
+    fon2 = pygame.transform.scale(load_image('fon2.png'), (width, height))
+    screen.blit(fon2, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
     for line in intro_text:
@@ -55,17 +74,17 @@ def start_screen():
         screen.blit(string_rendered, intro_rect)
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
+            elif e.type == pygame.KEYDOWN or \
+                    e.type == pygame.MOUSEBUTTONDOWN:
                 return
         pygame.display.flip()
 
 
 def finish_screen():
-    global score, omissions
+    global score, omissions, x_colors
     intro_text = [f'Ваш результат - {score}',
                   'Нажмите "Enter", чтобы начать новую игру.']
     fon2 = pygame.transform.scale(load_image('fon2.png'), (width, height))
@@ -88,6 +107,8 @@ def finish_screen():
             if e.type == pygame.KEYDOWN:
                 score = 0
                 omissions = 0
+                x_colors = [pygame.Color('grey'), pygame.Color('grey'), pygame.Color('grey')]
+                draw_x()
                 return
         pygame.display.flip()
 
@@ -119,13 +140,12 @@ class Fruit(pygame.sprite.Sprite):
     image1 = load_image('apple.png')
     image2 = load_image('pear.png')
     image3 = load_image('apricot.png')
+    image4 = load_image('cherry.png')
 
     def __init__(self, pos):
         super().__init__(all_sprites)
-        self.images = [(Fruit.image1, (45, 60)), (Fruit.image2, (45, 65)), (Fruit.image3, (50, 48))]
-        im = random.choice(self.images)
-        self.image = im[0]
-        self.image = pygame.transform.scale(self.image, im[1])
+        self.images = [Fruit.image1, Fruit.image2, Fruit.image3, Fruit.image4]
+        self.image = random.choice(self.images)
 
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -144,6 +164,7 @@ class Fruit(pygame.sprite.Sprite):
                 time += 3
         else:
             if omissions < 3:
+                x_colors[omissions] = pygame.Color('red')
                 omissions += 1
             else:
                 finish_screen()
@@ -170,6 +191,7 @@ while running:
             f = None
     all_sprites.update()
     all_sprites.draw(screen)
+    print_score()
     tm.tick(time)
     pygame.display.flip()
 terminate()
