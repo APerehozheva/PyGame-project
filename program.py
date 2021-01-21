@@ -59,15 +59,17 @@ def draw_x():
 
 
 def start_screen():
-    intro_text = ["ЗАСТАВКА"]
+    intro_text = ["Правила игры", 'Передвигая корзинку при помощи клавиш -> и <-,',
+                  'постарайтесь собрать как можно больше фруктов', '', 'Чтобы поставить игру на паузу, нажмите 1',
+                  'Чтобы снять игру с паузы, нажмите 1 повторно', '', 'Для начала игры нажмите Enter']
     fon2 = pygame.transform.scale(load_image('fon2.png'), (width, height))
     screen.blit(fon2, (0, 0))
-    font = pygame.font.Font(None, 30)
+    font = pygame.font.Font(None, 40)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('white'))
+        string_rendered = font.render(line, True, pygame.Color('white'))
         intro_rect = string_rendered.get_rect()
-        text_coord += 10
+        text_coord += 15
         intro_rect.top = text_coord
         intro_rect.x = 10
         text_coord += intro_rect.height
@@ -77,9 +79,9 @@ def start_screen():
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 terminate()
-            elif e.type == pygame.KEYDOWN or \
-                    e.type == pygame.MOUSEBUTTONDOWN:
-                return
+            elif e.type == pygame.KEYDOWN:
+                if e.key == 13:
+                    return
         pygame.display.flip()
 
 
@@ -89,12 +91,12 @@ def finish_screen():
                   'Нажмите "Enter", чтобы начать новую игру.']
     fon2 = pygame.transform.scale(load_image('fon2.png'), (width, height))
     screen.blit(fon2, (0, 0))
-    font = pygame.font.Font(None, 30)
+    font = pygame.font.Font(None, 40)
     text_coord = 100
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('white'))
+        string_rendered = font.render(line, True, pygame.Color('white'))
         intro_rect = string_rendered.get_rect()
-        text_coord += 10
+        text_coord += 15
         intro_rect.top = text_coord
         intro_rect.x = 10
         text_coord += intro_rect.height
@@ -105,11 +107,12 @@ def finish_screen():
             if e.type == pygame.QUIT:
                 terminate()
             if e.type == pygame.KEYDOWN:
-                score = 0
-                omissions = 0
-                x_colors = [pygame.Color('grey'), pygame.Color('grey'), pygame.Color('grey')]
-                draw_x()
-                return
+                if e.key == 13:
+                    score = 0
+                    omissions = 0
+                    x_colors = [pygame.Color('grey'), pygame.Color('grey'), pygame.Color('grey')]
+                    draw_x()
+                    return
         pygame.display.flip()
 
 
@@ -141,10 +144,11 @@ class Fruit(pygame.sprite.Sprite):
     image2 = load_image('pear.png')
     image3 = load_image('apricot.png')
     image4 = load_image('cherry.png')
+    image5 = load_image('orange.png')
 
     def __init__(self, pos):
         super().__init__(all_sprites)
-        self.images = [Fruit.image1, Fruit.image2, Fruit.image3, Fruit.image4]
+        self.images = [Fruit.image1, Fruit.image2, Fruit.image3, Fruit.image4, Fruit.image5]
         self.image = random.choice(self.images)
 
         self.rect = self.image.get_rect()
@@ -175,6 +179,7 @@ class Fruit(pygame.sprite.Sprite):
 start_screen()
 fon = pygame.transform.scale(load_image('fon.png'), (width, height))
 running = True
+pause = False
 Fruit((random.choice(A), 0))
 while running:
     screen.blit(fon, (0, 0))
@@ -187,11 +192,14 @@ while running:
                 f = 'left'
             elif event.key == pygame.K_RIGHT:
                 f = 'right'
+            elif event.key == 1073741913:
+                pause = not pause
         else:
             f = None
-    all_sprites.update()
-    all_sprites.draw(screen)
-    print_score()
-    tm.tick(time)
-    pygame.display.flip()
+    if not pause:
+        all_sprites.update()
+        all_sprites.draw(screen)
+        print_score()
+        tm.tick(time)
+        pygame.display.flip()
 terminate()
