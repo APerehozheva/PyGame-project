@@ -10,12 +10,12 @@ pygame.display.set_caption('HARVESTING')
 
 all_sprites = pygame.sprite.Group()
 
-A = [25, 125, 225, 325, 425, 525, 625]
-x_colors = [pygame.Color('grey'), pygame.Color('grey'), pygame.Color('grey')]
+A = [25, 125, 225, 325, 425, 525, 625]  # координаты х для фруктов
+x_colors = [pygame.Color('grey'), pygame.Color('grey'), pygame.Color('grey')]  # цвета крестиков в углу экрана
 tm = pygame.time.Clock()
 time = 200
-score = 0
-omissions = 0
+score = 0  # счет
+omissions = 0  # промахи
 
 
 def terminate():
@@ -39,6 +39,7 @@ def load_image(name, colorkey=None):
     return image
 
 
+# функция для обновления счета
 def print_score():
     font = pygame.font.Font(None, 25)
     text = font.render(f'''Счёт: {str(score)}''', True, (0, 255, 0))
@@ -47,6 +48,7 @@ def print_score():
     draw_x()
 
 
+# фунция для отрисовки крестиков в углу экрана
 def draw_x():
     pygame.draw.line(screen, x_colors[0], (5, 25), (30, 50), width=8)
     pygame.draw.line(screen, x_colors[0], (5, 50), (30, 25), width=8)
@@ -58,6 +60,7 @@ def draw_x():
     pygame.draw.line(screen, x_colors[2], (65, 50), (90, 25), width=8)
 
 
+# начальный экран, заставка
 def start_screen():
     intro_text = ["Правила игры", 'Передвигая корзинку при помощи клавиш -> и <-,',
                   'постарайтесь собрать как можно больше фруктов', '', 'Чтобы поставить игру на паузу, нажмите 1',
@@ -85,6 +88,7 @@ def start_screen():
         pygame.display.flip()
 
 
+# финальный экран
 def finish_screen():
     global score, omissions, x_colors
     intro_text = [f'Ваш результат - {score}',
@@ -116,6 +120,7 @@ def finish_screen():
         pygame.display.flip()
 
 
+# класс корзины
 class Basket(pygame.sprite.Sprite):
     image = load_image("box.png", colorkey=-1)
 
@@ -139,6 +144,7 @@ class Basket(pygame.sprite.Sprite):
 basket = Basket()
 
 
+# класс фруктов
 class Fruit(pygame.sprite.Sprite):
     image1 = load_image('apple.png')
     image2 = load_image('pear.png')
@@ -179,7 +185,7 @@ class Fruit(pygame.sprite.Sprite):
 start_screen()
 fon = pygame.transform.scale(load_image('fon.png'), (width, height))
 running = True
-pause = False
+pause = False  # для паузы
 Fruit((random.choice(A), 0))
 while running:
     screen.blit(fon, (0, 0))
