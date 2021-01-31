@@ -13,7 +13,7 @@ all_sprites = pygame.sprite.Group()
 A = [25, 125, 225, 325, 425, 525, 625]  # координаты х для фруктов
 x_colors = [pygame.Color('grey'), pygame.Color('grey'), pygame.Color('grey')]  # цвета крестиков в углу экрана
 tm = pygame.time.Clock()
-time = 200
+time = 110
 score = 0  # счет
 omissions = 0  # промахи
 
@@ -90,7 +90,7 @@ def start_screen():
 
 # финальный экран
 def finish_screen():
-    global score, omissions, x_colors
+    global time, score, omissions, x_colors
     intro_text = [f'Ваш результат - {score}',
                   'Нажмите "Enter", чтобы начать новую игру.']
     fon2 = pygame.transform.scale(load_image('fon2.png'), (width, height))
@@ -112,6 +112,7 @@ def finish_screen():
                 terminate()
             if e.type == pygame.KEYDOWN:
                 if e.key == 13:
+                    time = 110
                     score = 0
                     omissions = 0
                     x_colors = [pygame.Color('grey'), pygame.Color('grey'), pygame.Color('grey')]
@@ -165,13 +166,13 @@ class Fruit(pygame.sprite.Sprite):
     def update(self):
         global score, omissions, time
         if not pygame.sprite.collide_mask(self, basket) and self.rect.colliderect(screen.get_rect()):
-            self.rect = self.rect.move(0, 1)
+            self.rect = self.rect.move(0, 1 + time // 60)
         elif pygame.sprite.collide_mask(self, basket):
             score += 1
             self.kill()
             Fruit((random.choice(A), 0))
-            if time < 400:
-                time += 3
+            if time < 150:
+                time += 1
         else:
             if omissions < 3:
                 x_colors[omissions] = pygame.Color('red')
@@ -206,6 +207,6 @@ while running:
         all_sprites.update()
         all_sprites.draw(screen)
         print_score()
-        tm.tick(time)
         pygame.display.flip()
+        tm.tick(time)
 terminate()
